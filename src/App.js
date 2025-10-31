@@ -5,6 +5,8 @@ import GlobalStyle from "./styles/globalStyles";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import PasswordReset from "./pages/PasswordReset";
+import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 import FixedExpenses from "./pages/FixedExpenses";
@@ -29,6 +31,7 @@ function AppContent() {
     if (activePage === "categories") return <Categories />;
     if (activePage === "fixed") return <FixedExpenses />;
     if (activePage === "reports") return <Reports />;
+    if (activePage === "profile") return <Profile />;
   };
 
   const navItems = [
@@ -37,6 +40,7 @@ function AppContent() {
     { key: "categories", label: "Categorias", icon: "🏷️" },
     { key: "fixed", label: "Gastos Fixos", icon: "💼" },
     { key: "reports", label: "Relatórios", icon: "📅" },
+    { key: "profile", label: "Perfil", icon: "👤" },
   ];
 
   return (
@@ -150,6 +154,8 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/reset" element={<PasswordReset />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/*" element={<AuthenticatedApp />} />
         </Routes>
       </Router>

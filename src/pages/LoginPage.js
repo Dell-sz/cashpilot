@@ -88,6 +88,10 @@ const LoginPage = () => {
             <>
               Não tem conta?{" "}
               <span onClick={() => setIsLogin(false)}>Cadastre-se</span>
+              <br />
+              <span onClick={() => navigate("/reset")} className="text-sm text-cyan-400 hover:underline cursor-pointer">
+                Esqueceu a senha?
+              </span>
             </>
           ) : (
             <>
