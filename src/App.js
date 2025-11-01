@@ -14,7 +14,7 @@ import Categories from "./pages/Categories";
 import Reports from "./pages/Reports";
 
 function AppContent() {
-  const { user, loading, logout } = useAuth();
+  const { loading, logout } = useAuth();
   const [activePage, setActivePage] = useState("dashboard");
 
   if (loading) {

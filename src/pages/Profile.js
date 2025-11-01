@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import { doc, deleteDoc, getDoc } from "firebase/firestore";
-import { auth, db } from "../services/firebaseConfig";
+import { db } from "../services/firebaseConfig";
 
 export default function Profile() {
   const { user, logout } = useAuth();

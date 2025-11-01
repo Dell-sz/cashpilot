@@ -54,7 +54,31 @@ const LoginPage = () => {
         <h2>{isLogin ? "Entrar" : "Criar Conta"}</h2>
         <Form onSubmit={isLogin ? handleLogin : handleRegister}>
           {!isLogin && (
-            <Input type="text" placeholder="Nome completo" required />
+            <>
+              <Input type="text" placeholder="Nome completo" required />
+              <UserTypeContainer>
+                <label>
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="personal"
+                    checked={userType === "personal"}
+                    onChange={() => setUserType("personal")}
+                  />
+                  Pessoal
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="business"
+                    checked={userType === "business"}
+                    onChange={() => setUserType("business")}
+                  />
+                  Empresa
+                </label>
+              </UserTypeContainer>
+            </>
           )}
           <Input
             type="email"
@@ -210,5 +234,37 @@ const Switch = styled.p`
     color: #38bdf8;
     cursor: pointer;
     font-weight: 600;
+  }
+`;
+
+/* New styled component for the user type selector */
+const UserTypeContainer = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  color: #94a3b8;
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #0b1220;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #273449;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  input[type="radio"] {
+    accent-color: #38bdf8;
+  }
+
+  label:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+    color: #e6f9ff;
   }
 `;
