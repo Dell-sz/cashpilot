@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,7 +8,7 @@ export const useFixedExpenses = () => {
   const [fixedExpenses, setFixedExpenses] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchFixedExpenses = async () => {
+  const fetchFixedExpenses = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try {
@@ -23,7 +23,7 @@ export const useFixedExpenses = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const addFixedExpense = async (expenseData) => {
     if (!user) return;
@@ -67,7 +67,7 @@ export const useFixedExpenses = () => {
 
   useEffect(() => {
     fetchFixedExpenses();
-  }, [user]);
+  }, [user, fetchFixedExpenses]);
 
   return {
     fixedExpenses,

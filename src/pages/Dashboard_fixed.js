@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
@@ -393,8 +393,8 @@ export default function Dashboard() {
                   animationBegin={0}
                   animationDuration={800}
                 >
-                  {expenseDetails.map((_, index) => (
-                    <Cell key={`slice-${index}`} fill={expenseDetails[index].color} />
+                  {expenseDetails.map((entry, index) => (
+                    <Cell key={`slice-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -431,8 +431,8 @@ export default function Dashboard() {
                   animationBegin={0}
                   animationDuration={800}
                 >
-                  {incomeDetails.map((_, index) => (
-                    <Cell key={`slice-${index}`} fill={incomeDetails[index].color} />
+                  {incomeDetails.map((entry, index) => (
+                    <Cell key={`slice-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -469,7 +469,7 @@ export default function Dashboard() {
                   animationBegin={0}
                   animationDuration={800}
                 >
-                  {fixedExpenses.map((_, index) => (
+                  {fixedExpenses.map((entry, index) => (
                     <Cell key={`slice-${index}`} fill={fixedColors[index % fixedColors.length]} />
                   ))}
                 </Pie>
@@ -487,8 +487,9 @@ export default function Dashboard() {
               </PieChart>
             </ResponsiveContainer>
           </motion.div>
-        </motion.div>
-      </div >
-    </motion.div >
+
+        </motion.div> {/* end charts grid container */}
+      </div> {/* end #dashboard-content */}
+    </motion.div> /* end outer motion.div */
   );
 }

@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import GlobalStyle from "./styles/globalStyles";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { ToastProvider } from "./components/ui/ToastContainer";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import PasswordReset from "./pages/PasswordReset";
@@ -151,17 +150,15 @@ function AuthenticatedApp() {
 export default function App() {
   return (
     <AuthProvider>
-      <ToastProvider>
-        <Router>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/reset" element={<PasswordReset />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/*" element={<AuthenticatedApp />} />
-          </Routes>
-        </Router>
-      </ToastProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/reset" element={<PasswordReset />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/*" element={<AuthenticatedApp />} />
+        </Routes>
+      </Router>
     </AuthProvider>
   );
 }

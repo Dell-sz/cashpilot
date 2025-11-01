@@ -1,28 +1,4 @@
-# 💸 CashPilot - Aplicativo de Controle Financeiro
-
-![React](https://img.shields.io/badge/React-19+-61DAFB?logo=react)
-![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?logo=firebase)
-![Styled Components](https://img.shields.io/badge/Styled%20Components-%23DB7093?logo=styledcomponents)
-![Framer Motion](https://img.shields.io/badge/Framer%20Motion-Animations-0055FF?logo=framer)
-![Recharts](https://img.shields.io/badge/Recharts-Charts-8DD6F9?logo=recharts)
-
-> Aplicativo web React completo para controle financeiro pessoal e de pequenos negócios
-
-🔗 **[Demo Online (Vercel)](https://cashpilot.vercel.app)** | 📱 **[Repositório GitHub](https://github.com/seu-usuario/cashpilot)**
-
-## 📚 Sumário
-
-- [📋 Visão Geral](#-visão-geral)
-- [🛠️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
-- [📁 Estrutura do Projeto](#-estrutura-do-projeto)
-- [🔍 Detalhamento do Código](#-detalhamento-do-código)
-- [🚀 Como Executar](#-como-executar)
-- [📊 Funcionalidades Principais](#-funcionalidades-principais)
-- [🔧 Conceitos Técnicos Importantes](#-conceitos-técnicos-importantes)
-- [🎯 Padrões de Código](#-padrões-de-código)
-- [📈 Próximas Melhorias](#-próximas-melhorias)
-
----
+# CashPilot - Aplicativo de Controle Financeiro
 
 ## 📋 Visão Geral
 
@@ -49,7 +25,7 @@ O **CashPilot** é um aplicativo web React completo para controle financeiro pes
 
 ## 📁 Estrutura do Projeto
 
-```plaintext
+```bash
 cashpilot/
 ├── public/
 │   ├── index.html          # Arquivo HTML principal
@@ -250,43 +226,7 @@ const loadData = async () => {
 - **Gráficos:** Barra para resumo geral, pizza para distribuição por categoria
 - **Animações:** Framer Motion para transições suaves
 
-### 5. `src/pages/Transactions.js` - Gerenciamento de Transações
-
-**Funcionalidades:**
-
-- **CRUD Completo:** Criar, ler, atualizar, deletar transações
-- **Categorização:** Vinculação com categorias existentes ou criação de novas
-- **Filtros Avançados:** Pesquisa por texto, categoria, tipo e data
-- **Feedback Visual:** Toast notifications para sucesso e erro (substituindo alerts)
-- **Limpeza em Massa:** Opção de remover todas as transações com confirmação
-
-**Tratamento de Erros Aprimorado:**
-
-```javascript
-const handleAddTransaction = async () => {
-  if (!user) {
-    showError("Você precisa estar logado para adicionar transações.");
-    return;
-  }
-  // ... validação e processamento
-  try {
-    await addDoc(collection(db, "users", user.uid, "transactions"), data);
-    showSuccess("Transação adicionada com sucesso!");
-  } catch (error) {
-    console.error("Erro ao adicionar transação:", error);
-    showError("Erro ao adicionar transação. Tente novamente.");
-  }
-};
-```
-
-**Explicação detalhada:**
-
-- **Toast System:** Usa `useToast` hook para notificações consistentes
-- **Error Handling:** Try-catch em todas as operações Firebase
-- **User Feedback:** Mensagens claras em português para melhor UX
-- **Loading States:** Estados de carregamento para operações assíncronas
-
-### 6. `src/pages/Reports.js` - Relatórios Mensais
+### 5. `src/pages/Reports.js` - Relatórios Mensais
 
 **Funcionalidades:**
 

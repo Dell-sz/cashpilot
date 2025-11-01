@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,7 +8,7 @@ export const useCategories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try {
@@ -23,7 +23,7 @@ export const useCategories = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const addCategory = async (categoryData) => {
     if (!user) return;
@@ -63,7 +63,7 @@ export const useCategories = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, [user]);
+  }, [user, fetchCategories]);
 
   return {
     categories,

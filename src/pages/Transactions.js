@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../components/ui/ToastContainer";
 
 export default function Transactions() {
   const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
   const [newTransaction, setNewTransaction] = useState({ type: "Saída", category: "", value: "", customCategory: "", date: "" });
@@ -20,15 +22,25 @@ export default function Transactions() {
 
   const fetchTransactions = useCallback(async () => {
     if (!user) return;
-    const querySnapshot = await getDocs(collection(db, "users", user.uid, "transactions"));
-    setTransactions(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-  }, [user]);
+    try {
+      const querySnapshot = await getDocs(collection(db, "users", user.uid, "transactions"));
+      setTransactions(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) {
+      console.error("Erro ao buscar transações:", error);
+      showError("Erro ao carregar transações");
+    }
+  }, [user, showError]);
 
   const fetchCategories = useCallback(async () => {
     if (!user) return;
-    const querySnapshot = await getDocs(collection(db, "users", user.uid, "categories"));
-    setCategories(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-  }, [user]);
+    try {
+      const querySnapshot = await getDocs(collection(db, "users", user.uid, "categories"));
+      setCategories(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) {
+      console.error("Erro ao buscar categorias:", error);
+      showError("Erro ao carregar categorias");
+    }
+  }, [user, showError]);
 
   useEffect(() => {
     fetchTransactions();
@@ -37,12 +49,12 @@ export default function Transactions() {
 
   const handleAddTransaction = async () => {
     if (!user) {
-      alert("Você precisa estar logado para adicionar transações.");
+      showError("Você precisa estar logado para adicionar transações.");
       return;
     }
     const categoryToSave = newTransaction.category === "Outra" ? newTransaction.customCategory : newTransaction.category;
     if (!categoryToSave || !newTransaction.value) {
-      alert("Preencha todos os campos!");
+      showError("Preencha todos os campos!");
       return;
     }
     setIsAdding(true);
@@ -55,9 +67,10 @@ export default function Transactions() {
       });
       setNewTransaction({ type: "Saída", category: "", value: "", customCategory: "", date: "" });
       fetchTransactions();
+      showSuccess("Transação adicionada com sucesso!");
     } catch (error) {
       console.error("Erro ao adicionar transação:", error);
-      alert("Erro ao adicionar transação. Tente novamente.");
+      showError("Erro ao adicionar transação. Tente novamente.");
     } finally {
       setIsAdding(false);
     }
@@ -65,7 +78,7 @@ export default function Transactions() {
 
   const handleClearTransactions = async () => {
     if (!user) {
-      alert("Você precisa estar logado para limpar transações.");
+      showError("Você precisa estar logado para limpar transações.");
       return;
     }
     if (!window.confirm("Tem certeza que quer apagar todas as transações? Esta ação não pode ser desfeita!")) return;
@@ -77,9 +90,10 @@ export default function Transactions() {
       );
       await Promise.all(deletePromises);
       fetchTransactions();
+      showSuccess("Todas as transações foram removidas!");
     } catch (error) {
       console.error("Erro ao limpar transações:", error);
-      alert("Erro ao limpar transações. Tente novamente.");
+      showError("Erro ao limpar transações. Tente novamente.");
     } finally {
       setIsClearing(false);
     }
@@ -87,16 +101,17 @@ export default function Transactions() {
 
   const deleteTransaction = async (id) => {
     if (!user) {
-      alert("Você precisa estar logado para excluir transações.");
+      showError("Você precisa estar logado para excluir transações.");
       return;
     }
     if (!window.confirm("Tem certeza que deseja excluir esta transação?")) return;
     try {
       await deleteDoc(doc(db, "users", user.uid, "transactions", id));
       fetchTransactions();
+      showSuccess("Transação excluída com sucesso!");
     } catch (error) {
       console.error("Erro ao excluir transação:", error);
-      alert("Erro ao excluir transação. Tente novamente.");
+      showError("Erro ao excluir transação. Tente novamente.");
     }
   };
 
