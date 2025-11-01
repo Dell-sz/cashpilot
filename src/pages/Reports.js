@@ -34,16 +34,20 @@ export default function Reports() {
   }, [loadReports]);
 
   const generateMonthlyReport = async () => {
+    if (!user) {
+      alert("Você precisa estar logado para gerar relatórios.");
+      return;
+    }
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
     try {
       // Carregar dados do mês atual
-      const transSnapshot = await getDocs(collection(db, "transactions"));
+      const transSnapshot = await getDocs(collection(db, "users", user.uid, "transactions"));
       const transData = transSnapshot.docs.map((doc) => doc.data());
 
-      const fixedSnapshot = await getDocs(collection(db, "fixed_expenses"));
+      const fixedSnapshot = await getDocs(collection(db, "users", user.uid, "fixed_expenses"));
       const fixedData = fixedSnapshot.docs.map((doc) => doc.data());
 
       // Carregar categorias (não usado atualmente, mas pode ser útil no futuro)
@@ -67,7 +71,7 @@ export default function Reports() {
       const gastosFixos = fixedData.reduce((acc, f) => acc + parseFloat(f.value || 0), 0);
 
       // Salvar relatório no Firestore
-      await addDoc(collection(db, "reports"), {
+      await addDoc(collection(db, "users", user.uid, "reports"), {
         month: currentMonth,
         year: currentYear,
         entradas,

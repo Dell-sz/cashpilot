@@ -1,21 +1,46 @@
-# CashPilot - Aplicativo de Controle Financeiro
+# 💸 CashPilot - Aplicativo de Controle Financeiro
+
+![React](https://img.shields.io/badge/React-19+-61DAFB?logo=react)
+![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?logo=firebase)
+![Styled Components](https://img.shields.io/badge/Styled%20Components-%23DB7093?logo=styledcomponents)
+![Framer Motion](https://img.shields.io/badge/Framer%20Motion-Animations-0055FF?logo=framer)
+![Recharts](https://img.shields.io/badge/Recharts-Charts-8DD6F9?logo=recharts)
+
+> Aplicativo web React completo para controle financeiro pessoal e de pequenos negócios
+
+🔗 **[Demo Online (Vercel)](https://cashpilot.vercel.app)** | 📱 **[Repositório GitHub](https://github.com/seu-usuario/cashpilot)**
+
+## 📚 Sumário
+
+- [📋 Visão Geral](#-visão-geral)
+- [🛠️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
+- [📁 Estrutura do Projeto](#-estrutura-do-projeto)
+- [🔍 Detalhamento do Código](#-detalhamento-do-código)
+- [🚀 Como Executar](#-como-executar)
+- [📊 Funcionalidades Principais](#-funcionalidades-principais)
+- [🔧 Conceitos Técnicos Importantes](#-conceitos-técnicos-importantes)
+- [🎯 Padrões de Código](#-padrões-de-código)
+- [📈 Próximas Melhorias](#-próximas-melhorias)
+
+---
 
 ## 📋 Visão Geral
 
-O **CashPilot** é um aplicativo web React para controle financeiro pessoal, desenvolvido com Firebase como backend. Permite gerenciar transações, categorias, gastos fixos e visualizar dashboards com gráficos interativos.
+O **CashPilot** é um aplicativo web React completo para controle financeiro pessoal e de pequenos negócios, desenvolvido com Firebase como backend. Inclui autenticação de usuários, gerenciamento de transações, categorias, gastos fixos, geração de relatórios mensais em PDF e muito mais.
 
 ## 🛠️ Tecnologias Utilizadas
 
 - **Frontend:**
-  - React 18+ (com Hooks)
-  - Framer Motion (animações)
-  - Tailwind CSS (estilização)
-  - Recharts (gráficos)
-  - React Router (roteamento)
+  - React 19+ (com Hooks e Context API)
+  - Framer Motion (animações e transições)
+  - Styled Components (estilização customizada)
+  - Recharts (gráficos interativos)
+  - React Router DOM (roteamento SPA)
+  - jsPDF & html2canvas (geração de PDFs)
 
 - **Backend:**
+  - Firebase Authentication (login, registro, reset de senha)
   - Firebase Firestore (banco de dados NoSQL)
-  - Firebase SDK
 
 - **Ferramentas de Desenvolvimento:**
   - Create React App
@@ -28,21 +53,28 @@ O **CashPilot** é um aplicativo web React para controle financeiro pessoal, des
 cashpilot/
 ├── public/
 │   ├── index.html          # Arquivo HTML principal
-│   └── favicon.ico         # Ícone da aplicação
+│   ├── favicon.ico         # Ícone da aplicação
+│   └── manifest.json       # Configuração PWA
 ├── src/
 │   ├── components/         # Componentes reutilizáveis
+│   ├── contexts/
+│   │   └── AuthContext.js  # Contexto de autenticação
 │   ├── pages/             # Páginas principais da aplicação
+│   │   ├── LoginPage.js   # Página de login
+│   │   ├── RegisterPage.js # Página de registro
+│   │   ├── PasswordReset.js # Reset de senha
+│   │   ├── Profile.js     # Perfil do usuário
 │   │   ├── Dashboard.js   # Dashboard com resumos e gráficos
 │   │   ├── Transactions.js # Gerenciamento de transações
 │   │   ├── Categories.js  # Gerenciamento de categorias
-│   │   └── FixedExpenses.js # Gerenciamento de gastos fixos
+│   │   ├── FixedExpenses.js # Gerenciamento de gastos fixos
+│   │   └── Reports.js     # Relatórios mensais
 │   ├── services/
 │   │   └── firebaseConfig.js # Configuração do Firebase
 │   ├── styles/
-│   │   └── globalStyles.js # Estilos globais CSS
+│   │   └── globalStyles.js # Estilos globais com Styled Components
 │   ├── App.js             # Componente principal da aplicação
-│   ├── index.js           # Ponto de entrada da aplicação
-│   └── index.css          # Estilos CSS globais
+│   └── index.js           # Ponto de entrada da aplicação
 ├── package.json           # Dependências e scripts
 └── README.md             # Este arquivo
 ```
@@ -52,231 +84,268 @@ cashpilot/
 ### 1. `src/App.js` - Componente Principal
 
 ```javascript
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import Sidebar from './components/Sidebar';
-import Dashboard from './pages/Dashboard';
-import Transactions from './pages/Transactions';
-import Categories from './pages/Categories';
-import FixedExpenses from './pages/FixedExpenses';
-import './styles/globalStyles.js';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import GlobalStyle from "./styles/globalStyles";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+// ... imports de páginas
 
-function App() {
-  return (
-    <Router>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <Sidebar />
-        <main className="ml-64 p-8">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/transactions" element={<Transactions />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/fixed-expenses" element={<FixedExpenses />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
-  );
+function AppContent() {
+  const { loading, logout } = useAuth();
+  const [activePage, setActivePage] = useState("dashboard");
+
+  // ... lógica de loading e renderização condicional
+
+  const renderPage = () => {
+    switch (activePage) {
+      case "dashboard": return <Dashboard />;
+      case "transactions": return <Transactions />;
+      case "categories": return <Categories />;
+      case "fixed": return <FixedExpenses />;
+      case "reports": return <Reports />;
+      case "profile": return <Profile />;
+      default: return <Dashboard />;
+    }
+  };
+
+  // ... definição de navItems e JSX da sidebar e main content
 }
 
-export default App;
+function AuthenticatedApp() {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  return <AppContent />;
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/reset" element={<PasswordReset />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/*" element={<AuthenticatedApp />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+}
 ```
 
 **Explicação detalhada:**
 
-- **Importações:** Carrega React, React Router para navegação, Framer Motion para animações, componentes das páginas e estilos globais.
-- **Estrutura JSX:** Usa `BrowserRouter` para gerenciar rotas. O layout principal tem uma sidebar fixa (64px à esquerda) e o conteúdo principal com padding.
-- **Background:** Gradiente escuro de slate para tema dark.
-- **Rotas:** Define 4 rotas principais: dashboard (página inicial), transações, categorias e gastos fixos.
-- **Sidebar:** Componente de navegação lateral (não mostrado no código, mas referenciado).
+- **Estrutura de Autenticação:** Usa `AuthProvider` para gerenciar estado global de autenticação. Rotas públicas (login, registro, reset) e protegidas (dashboard e outras).
+- **Navegação:** Sidebar animada com navegação baseada em estado (`activePage`). Usa Framer Motion para animações.
+- **Layout:** Design dark com gradientes, sidebar fixa de 250px e conteúdo principal responsivo.
+- **Roteamento:** React Router com proteção de rotas - usuários não autenticados são redirecionados para login.
 
-### 2. `src/services/firebaseConfig.js` - Configuração Firebase
+### 2. `src/contexts/AuthContext.js` - Contexto de Autenticação
 
 ```javascript
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { auth, db } from '../services/firebaseConfig';
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+
+const AuthContext = createContext();
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
+  return context;
+};
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [userType, setUserType] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+        if (userDoc.exists()) {
+          setUserType(userDoc.data().userType);
+        } else {
+          setUserType('personal');
+        }
+      } else {
+        setUser(null);
+        setUserType(null);
+      }
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  // ... funções login, register, loginWithGoogle, logout
+
+  const value = { user, userType, login, register, loginWithGoogle, logout, loading };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+```
+
+**Explicação detalhada:**
+
+- **Estado Global:** Gerencia usuário autenticado, tipo de conta (personal/business) e estado de loading.
+- **Persistência:** `onAuthStateChanged` mantém o usuário logado entre sessões.
+- **Integração Firestore:** Salva e recupera dados do usuário (tipo de conta, data de criação).
+- **Métodos:** Login com email/senha, registro, login com Google, logout.
+
+### 3. `src/services/firebaseConfig.js` - Configuração Firebase
+
+```javascript
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
+  apiKey: "AIzaSyDVlIrkTKXSKZD8xk_cvZlkYghVvVHliB8",
+  authDomain: "cashpilot-72594.firebaseapp.com",
+  projectId: "cashpilot-72594",
+  storageBucket: "cashpilot-72594.firebasestorage.app",
+  messagingSenderId: "787849063073",
+  appId: "1:787849063073:web:cfcd07ff22f3e90d525ee0"
 };
 
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
 export const db = getFirestore(app);
 ```
 
 **Explicação detalhada:**
 
-- **Importações:** Inicializa o Firebase App e obtém a instância do Firestore.
-- **Configuração:** Objeto com credenciais do projeto Firebase (deve ser preenchido com dados reais).
-- **Inicialização:** Cria a instância da aplicação Firebase e exporta o banco de dados Firestore.
-- **Uso:** Todos os componentes usam `db` para operações CRUD no Firestore.
+- **Configuração:** Credenciais do projeto Firebase (substitua pelos seus valores).
+- **Inicialização:** Cria instância da app Firebase e exporta auth e db para uso em toda a aplicação.
+- **Segurança:** Nunca commite chaves reais em repositórios públicos.
 
-### 3. `src/pages/Dashboard.js` - Dashboard Principal
+### 4. `src/pages/Dashboard.js` - Dashboard Principal
 
 **Estrutura Geral:**
 
-- **Estados:** `transactions`, `fixedExpenses`, `categories`, `summary`
-- **useEffect:** Carrega dados do Firestore ao montar o componente
+- **Estados:** `transactions`, `fixedExpenses`, `categories`, `summary`, `loading`
+- **useEffect:** Carrega dados do Firestore do usuário autenticado
 - **Cálculos:** Computa totais de entradas, saídas, gastos fixos e saldo
 
 **Funções Principais:**
 
 ```javascript
 const loadData = async () => {
-  // Carrega transações, gastos fixos e categorias do Firestore
-  // Calcula totais e atualiza estados
+  if (!user) return;
+  const transSnapshot = await getDocs(collection(db, "users", user.uid, "transactions"));
+  const fixedSnapshot = await getDocs(collection(db, "users", user.uid, "fixed_expenses"));
+  const catSnapshot = await getDocs(collection(db, "users", user.uid, "categories"));
+  // ... processamento dos dados
 };
 ```
 
 **Renderização:**
 
-- **Cards de Resumo:** 4 cards mostrando entradas, saídas, gastos fixos e saldo
-- **Gráficos:** Barra para resumo geral, pizza para saídas/categorias, entradas/categorias e gastos fixos
-- **Animações:** Usa Framer Motion para transições suaves
+- **Cards de Resumo:** 4 cards com entradas, saídas, gastos fixos e saldo
+- **Gráficos:** Barra para resumo geral, pizza para distribuição por categoria
+- **Animações:** Framer Motion para transições suaves
 
-**Detalhes Técnicos:**
+### 5. `src/pages/Reports.js` - Relatórios Mensais
 
-- **Filtragem:** Usa `filter()` para separar entradas e saídas baseado em `type` ou `tipo`
-- **Mapeamento:** Cria objetos `expenseMap` e `incomeMap` para agrupar por categoria
-- **Cores:** Função `getColorForCategory()` busca cores das categorias no Firestore
-- **Formatação:** Usa `toFixed(2)` para 2 casas decimais nos valores
+**Funcionalidades:**
 
-### 4. `src/pages/Transactions.js` - Gerenciamento de Transações
+- **Geração de Relatórios:** Cria relatório mensal com totais calculados
+- **Armazenamento:** Salva relatórios no Firestore (`users/{uid}/reports`)
+- **Download PDF:** Usa jsPDF e html2canvas para gerar PDFs visuais
+- **Histórico:** Lista todos os relatórios gerados com opção de download
 
-**Estados:**
+**Estrutura do PDF:**
 
-- `transactions`: Lista de transações
-- `categories`: Lista de categorias disponíveis
-- `newTransaction`: Objeto para nova transação
-- `isAdding`, `isClearing`: Estados de loading
+- **Cabeçalho:** Logo CashPilot e data do relatório
+- **Resumo Visual:** Cards coloridos com entradas, saídas, gastos fixos e saldo
+- **Transações:** Lista detalhada das transações do mês
+- **Rodapé:** Copyright e data de geração
 
-**Funções CRUD:**
+### 6. `src/pages/Profile.js` - Perfil do Usuário
 
-- `fetchTransactions()`: Carrega transações do Firestore
-- `handleAddTransaction()`: Adiciona nova transação com validação
-- `handleClearTransactions()`: Remove todas as transações
-- `deleteTransaction(id)`: Remove transação específica
+**Funcionalidades:**
 
-**Formulário:**
-
-- Campos: Tipo (Entrada/Saída), Categoria (select com opção "Outra"), Valor, Data
-- Validação: Verifica se categoria e valor estão preenchidos
-- Enter key: Permite adicionar pressionando Enter
-
-**Lista de Transações:**
-
-- Ordenação: Por data decrescente (`sort()` com `new Date()`)
-- Formatação: `formatDate()` e `formatCurrency()` para exibição
-- Cores: Verde para entradas, vermelho para saídas
-
-### 5. `src/pages/Categories.js` - Gerenciamento de Categorias
-
-**Estados:**
-
-- `categories`: Lista de categorias
-- `newCategory`: Objeto com name e color
-- `isAdding`: Estado de loading
-
-**Funções CRUD:**
-
-- `fetchCategories()`: Carrega categorias do Firestore
-- `handleAddCategory()`: Adiciona categoria com validação
-- `handleDeleteCategory()`: Remove categoria com confirmação
-- `handleUpdateCategory()`: Atualiza nome e cor inline
-
-**Interface:**
-
-- **Formulário:** Input para nome e color picker
-- **Lista:** Cada categoria tem inputs editáveis para nome e cor
-- **Inline Editing:** Permite editar diretamente nos campos
-- **Confirmação:** `window.confirm()` antes de deletar
-
-### 6. `src/pages/FixedExpenses.js` - Gastos Fixos
-
-**Estados:**
-
-- `fixedList`: Array de gastos fixos
-- `name`, `value`: Campos do formulário
-- `isAdding`: Estado de loading
-
-**Funções:**
-
-- `loadFixedExpenses()`: Carrega gastos fixos
-- `addFixedExpense()`: Adiciona novo gasto fixo
-- `removeFixed()`: Remove gasto fixo específico
-
-**Cálculo:**
-
-- `totalFixedExpenses`: Soma de todos os valores usando `reduce()`
-
-**Interface:**
-
-- **Card de Resumo:** Mostra total de gastos fixos
-- **Formulário:** Nome e valor mensal
-- **Lista:** Cards com nome, valor e botão remover
+- **Informações da Conta:** Exibe email, tipo de conta e data de criação
+- **Segurança:** Link para reset de senha
+- **Exclusão de Conta:** Opção perigosa com confirmação de senha e reautenticação
+- **Integração:** Remove dados do Firestore e conta do Firebase Auth
 
 ### 7. `src/styles/globalStyles.js` - Estilos Globais
 
 ```javascript
-import './index.css';
+import { createGlobalStyle } from "styled-components";
 
-// Estilos globais adicionais podem ser definidos aqui
+const GlobalStyle = createGlobalStyle`
+  /* Reset e base */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background: radial-gradient(circle at top left, #0f172a, #0a0f1e);
+    color: #f8fafc;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ... estilos customizados para inputs, buttons, cards, etc. */
+`;
+
+export default GlobalStyle;
 ```
 
 **Explicação:**
 
-- Importa estilos base do Tailwind CSS
-- Pode conter estilos customizados adicionais
-
-### 8. `src/index.js` - Ponto de Entrada
-
-```javascript
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-```
-
-**Explicação:**
-
-- Cria o root React e renderiza o componente App
-- Usa React 18+ com `createRoot`
-- StrictMode para desenvolvimento
+- **Reset CSS:** Remove margens e paddings padrão
+- **Tema Dark:** Gradientes e cores escuras consistentes
+- **Componentes Base:** Estilos para inputs, buttons, cards reutilizáveis
+- **Scrollbar Customizada:** Design moderno com cores do tema
 
 ## 🚀 Como Executar
 
-1. **Instalar dependências:**
+1. **Clonar o repositório:**
+
+   ```bash
+   git clone https://github.com/seu-usuario/cashpilot.git
+   cd cashpilot
+   ```
+
+2. **Instalar dependências:**
 
    ```bash
    npm install
    ```
 
-2. **Configurar Firebase:**
-   - Criar projeto no Firebase Console
-   - Habilitar Firestore
-   - Copiar credenciais para `firebaseConfig.js`
+3. **Configurar Firebase:**
+   - Criar projeto no [Firebase Console](https://console.firebase.google.com/)
+   - Habilitar Authentication (Email/Password e Google)
+   - Habilitar Firestore Database
+   - Copiar credenciais para `src/services/firebaseConfig.js`
 
-3. **Executar aplicação:**
+4. **Executar aplicação:**
 
    ```bash
    npm start
    ```
 
-4. **Acessar:** <http://localhost:3000>
+5. **Acessar:** <http://localhost:3000>
 
 ## 📊 Funcionalidades Principais
+
+### Autenticação Completa
+
+- **Registro:** Criação de conta com email/senha e tipo de conta (Pessoal/MEI)
+- **Login:** Autenticação com email/senha ou Google
+- **Reset de Senha:** Recuperação via email
+- **Perfil:** Visualização e gerenciamento de conta, exclusão de conta
 
 ### Dashboard
 
@@ -289,8 +358,7 @@ root.render(
 ### Transações
 
 - **CRUD Completo:** Criar, ler, atualizar, deletar transações
-- **Categorização:** Vinculação com categorias existentes
-- **Criação de Categorias:** Opção de criar categoria nova durante transação
+- **Categorização:** Vinculação com categorias existentes ou criação de novas
 - **Datas:** Controle temporal das transações
 - **Limpeza em Massa:** Opção de remover todas as transações
 
@@ -299,7 +367,6 @@ root.render(
 - **Gerenciamento Visual:** Interface intuitiva para criar/editar/deletar
 - **Cores Personalizáveis:** Cada categoria tem cor associada
 - **Edição Inline:** Modificar nome e cor diretamente na lista
-- **Validação:** Prevenção de categorias vazias
 
 ### Gastos Fixos
 
@@ -307,67 +374,82 @@ root.render(
 - **Cálculo Automático:** Total atualizado dinamicamente
 - **Interface Simples:** Foco na usabilidade
 
+### Relatórios
+
+- **Geração Mensal:** Relatórios automáticos com dados do mês atual
+- **Exportação PDF:** Downloads visuais e profissionais
+- **Histórico:** Acesso a relatórios anteriores
+
 ## 🔧 Conceitos Técnicos Importantes
 
-### React Hooks
+### React Context API
 
-- **useState:** Gerenciamento de estado local
-- **useEffect:** Efeitos colaterais (carregamento de dados)
+- **AuthContext:** Gerenciamento global de autenticação
+- **Provider Pattern:** `AuthProvider` envolve a aplicação
+- **Custom Hook:** `useAuth()` para acesso ao contexto
 
-### Firebase Firestore
+### Firebase Security
 
-- **Coleções:** `transactions`, `categories`, `fixed_expenses`
-- **Operações:** `getDocs()`, `addDoc()`, `updateDoc()`, `deleteDoc()`
-- **Estrutura de Dados:** Documentos com campos variados
+- **Regras de Segurança:** Dados isolados por usuário (`users/{uid}/collections`)
+- **Reautenticação:** Necessária para operações sensíveis (exclusão de conta)
+- **Estrutura de Dados:** Subcoleções para organizar dados por usuário
 
-### Tailwind CSS
+### Styled Components
 
-- **Classes Utilitárias:** Estilização rápida e consistente
-- **Responsividade:** `md:grid-cols-2`, `sm:flex-row`
-- **Tema Dark:** Cores escuras com gradientes
+- **CSS-in-JS:** Estilos encapsulados em componentes
+- **Tema Global:** `GlobalStyle` para consistência
+- **Dinâmico:** Props para variações de estilo
 
 ### Framer Motion
 
-- **Animações:** `motion.div`, `initial`, `animate`, `transition`
-- **Interações:** `whileHover`, `whileTap`
+- **Animações Declarativas:** `motion.div`, `initial`, `animate`
+- **Interações:** `whileHover`, `whileTap` para feedback visual
 - **Sequências:** `delay` para animações em cascata
 
-### Recharts
+### jsPDF + html2canvas
 
-- **Componentes:** `BarChart`, `PieChart`, `ResponsiveContainer`
-- **Dados:** Arrays de objetos com `name` e `value`
-- **Customização:** `Tooltip`, `Legend`, cores dinâmicas
+- **Geração de PDF:** Converte HTML/CSS para documento PDF
+- **Captura Visual:** `html2canvas` renderiza elementos DOM
+- **Customização:** Layout profissional com branding
 
 ## 🎯 Padrões de Código
 
 ### Estrutura de Componentes
 
-- **Separação de Responsabilidades:** Cada página tem sua lógica isolada
-- **Reutilização:** Funções utilitárias (formatação, cálculos)
-- **Estado Centralizado:** Dados vêm do Firestore, não de props
+- **Separação por Domínio:** Páginas, componentes, contexts, services
+- **Responsabilidade Única:** Cada arquivo/componente tem um propósito claro
+- **Reutilização:** Funções utilitárias e componentes base
+
+### Gerenciamento de Estado
+
+- **Local vs Global:** Estados locais com `useState`, global com Context
+- **Efeitos Colaterais:** `useEffect` para carregamento de dados
+- **Otimização:** `useCallback` para funções estáveis
 
 ### Tratamento de Erros
 
 - **Try/Catch:** Em todas as operações assíncronas
-- **Alertas:** Feedback visual para usuário
-- **Console Logging:** Debug durante desenvolvimento
+- **Feedback Visual:** Alertas e mensagens de erro para usuário
+- **Logging:** Console para debug durante desenvolvimento
 
-### Performance
+### Segurança
 
-- **Lazy Loading:** Dados carregados apenas quando necessário
-- **Memoização:** Evita recálculos desnecessários
-- **Otimização:** `useEffect` com dependências corretas
+- **Validação:** Inputs validados no frontend e backend
+- **Autenticação:** Rotas protegidas e verificação de usuário
+- **Dados Sensíveis:** Senhas não armazenadas localmente
 
 ## 📈 Próximas Melhorias
 
-- Autenticação de usuários
-- Exportação de relatórios (PDF/Excel)
-- Notificações de orçamento
-- Sincronização offline
-- Testes automatizados
-- TypeScript para tipagem
-- PWA (Progressive Web App)
+- **PWA (Progressive Web App):** Instalação offline e notificações
+- **Sincronização Offline:** Funcionamento sem internet
+- **Testes Automatizados:** Cobertura completa com Jest/React Testing Library
+- **TypeScript:** Tipagem estática para maior robustez
+- **Multi-idioma:** Suporte a português e inglês
+- **Exportação Avançada:** Excel, CSV além de PDF
+- **Orçamentos:** Definição e monitoramento de metas
+- **Relatórios Personalizados:** Filtros por período e categoria
+- **Integração Bancária:** Importação automática de transações
 
 ---
 
-Este README serve como documentação completa do projeto CashPilot, explicando cada aspecto técnico e funcional para fins educacionais.
+Este README serve como documentação completa do projeto CashPilot, explicando cada aspecto técnico e funcional para fins educacionais e de referência para desenvolvimento futuro.
