@@ -70,11 +70,14 @@ export const useTransactions = () => {
     }
   };
 
+
   const clearAllTransactions = async () => {
     if (!user) return;
     try {
       const querySnapshot = await getDocs(collection(db, 'users', user.uid, 'transactions'));
-      const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+      const deletePromises = querySnapshot.docs.map(doc =>
+        deleteDoc(doc(db, 'users', user.uid, 'transactions', doc.id))
+      );
       await Promise.all(deletePromises);
       setTransactions([]);
     } catch (error) {

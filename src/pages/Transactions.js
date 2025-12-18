@@ -1,15 +1,18 @@
 
+
 import React, { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../components/ui/ToastContainer";
+import { useTransactions } from "../hooks/useTransactions";
+
 
 export default function Transactions() {
   const { user } = useAuth();
   const { showSuccess, showError } = useToast();
-  const [transactions, setTransactions] = useState([]);
+  const { transactions, addTransaction, deleteTransaction: deleteTransactionFromHook, clearAllTransactions } = useTransactions();
   const [categories, setCategories] = useState([]);
   const [newTransaction, setNewTransaction] = useState({ type: "Saída", category: "", value: "", customCategory: "", date: "" });
   const [isAdding, setIsAdding] = useState(false);
@@ -21,16 +24,6 @@ export default function Transactions() {
   const [filterType, setFilterType] = useState("");
   const [filterDate, setFilterDate] = useState("");
 
-  const fetchTransactions = useCallback(async () => {
-    if (!user) return;
-    try {
-      const querySnapshot = await getDocs(collection(db, "users", user.uid, "transactions"));
-      setTransactions(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    } catch (error) {
-      console.error("Erro ao buscar transações:", error);
-      showError("Erro ao carregar transações");
-    }
-  }, [user, showError]);
 
   const fetchCategories = useCallback(async () => {
     if (!user) return;
@@ -44,9 +37,9 @@ export default function Transactions() {
   }, [user, showError]);
 
   useEffect(() => {
-    fetchTransactions();
     fetchCategories();
-  }, [fetchTransactions, fetchCategories]);
+  }, [fetchCategories]);
+
 
   const handleAddTransaction = async () => {
     if (!user) {
@@ -60,14 +53,15 @@ export default function Transactions() {
     }
     setIsAdding(true);
     try {
-      await addDoc(collection(db, "users", user.uid, "transactions"), {
+      const transactionData = {
         ...newTransaction,
         category: categoryToSave,
         value: parseFloat(newTransaction.value),
         date: newTransaction.date || new Date().toISOString().split("T")[0]
-      });
+      };
+
+      await addTransaction(transactionData);
       setNewTransaction({ type: "Saída", category: "", value: "", customCategory: "", date: "" });
-      fetchTransactions();
       showSuccess("Transação adicionada com sucesso!");
     } catch (error) {
       console.error("Erro ao adicionar transação:", error);
@@ -77,6 +71,7 @@ export default function Transactions() {
     }
   };
 
+
   const handleClearTransactions = async () => {
     if (!user) {
       showError("Você precisa estar logado para limpar transações.");
@@ -85,12 +80,7 @@ export default function Transactions() {
     if (!window.confirm("Tem certeza que quer apagar todas as transações? Esta ação não pode ser desfeita!")) return;
     setIsClearing(true);
     try {
-      const querySnapshot = await getDocs(collection(db, "users", user.uid, "transactions"));
-      const deletePromises = querySnapshot.docs.map(document =>
-        deleteDoc(doc(db, "users", user.uid, "transactions", document.id))
-      );
-      await Promise.all(deletePromises);
-      fetchTransactions();
+      await clearAllTransactions();
       showSuccess("Todas as transações foram removidas!");
     } catch (error) {
       console.error("Erro ao limpar transações:", error);
@@ -107,8 +97,7 @@ export default function Transactions() {
     }
     if (!window.confirm("Tem certeza que deseja excluir esta transação?")) return;
     try {
-      await deleteDoc(doc(db, "users", user.uid, "transactions", id));
-      fetchTransactions();
+      await deleteTransactionFromHook(id);
       showSuccess("Transação excluída com sucesso!");
     } catch (error) {
       console.error("Erro ao excluir transação:", error);

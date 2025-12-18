@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import {
@@ -18,84 +18,56 @@ const HomePage = ({ onNavigate }) => {
   const { fixedExpenses } = useFixedExpenses();
   const [greeting, setGreeting] = useState('');
   const [quickStats, setQuickStats] = useState(null);
+
   const [showPendingModal, setShowPendingModal] = useState(false);
 
-  useEffect(() => {
-    // Saudação baseada no horário
-    const hour = new Date().getHours();
-    if (hour < 12) setGreeting('Bom dia');
-    else if (hour < 18) setGreeting('Boa tarde');
-    else setGreeting('Boa noite');
-
-    // Carregar estatísticas rápidas
-    loadQuickStats();
-  }, [transactions, fixedExpenses]);
-
-
+  // Funções de cálculo financeiro
   const calculateBalance = () => {
-    if (!transactions || transactions.length === 0) {
-      return 0; // Se não há transações, saldo é zero
-    }
-
     return transactions.reduce((total, transaction) => {
       const amount = parseFloat(transaction.amount || 0);
-      return total + amount;
+      return total + (transaction.type === 'income' ? amount : -amount);
     }, 0);
   };
 
-
   const calculateTodaySpent = () => {
-    const today = new Date().toDateString();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     return transactions
       .filter(transaction => {
-        // Usar 'date' quando disponível, fallback para 'createdAt'
-        const transactionDate = new Date(transaction.date || transaction.createdAt?.toDate?.() || transaction.createdAt).toDateString();
-        return transactionDate === today && transaction.amount < 0;
+        const transactionDate = new Date(transaction.date || transaction.createdAt?.toDate?.() || transaction.createdAt);
+        transactionDate.setHours(0, 0, 0, 0);
+        return transactionDate.getTime() === today.getTime() && transaction.type === 'expense';
       })
-      .reduce((total, transaction) => total + Math.abs(parseFloat(transaction.amount || 0)), 0);
+      .reduce((total, transaction) => total + parseFloat(transaction.amount || 0), 0);
   };
 
   const getPendingItems = () => {
-    const pending = [];
+    const items = [];
 
-    // Gastos fixos próximos ao vencimento (próximos 7 dias)
-    const nextWeek = new Date();
-    nextWeek.setDate(nextWeek.getDate() + 7);
+    // Verificar despesas fixas próximas do vencimento (próximos 7 dias)
+    const today = new Date();
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
 
     fixedExpenses.forEach(expense => {
       if (expense.dueDate) {
         const dueDate = new Date(expense.dueDate);
-        if (dueDate <= nextWeek && dueDate >= new Date()) {
-          pending.push({
+        if (dueDate >= today && dueDate <= nextWeek) {
+          items.push({
             type: 'fixed_expense',
             title: expense.name,
-            amount: Math.abs(parseFloat(expense.value || 0)),
-            dueDate: dueDate,
-            description: `Gasto fixo - Vence em ${dueDate.toLocaleDateString('pt-BR')}`
+            description: `Vencimento em ${dueDate.toLocaleDateString('pt-BR')}`,
+            amount: parseFloat(expense.amount || 0)
           });
         }
       }
     });
 
-
-    // Transações com valor alto (> R$ 500) que precisam de atenção
-    transactions.forEach(transaction => {
-      if (Math.abs(parseFloat(transaction.amount || 0)) > 500) {
-        pending.push({
-          type: 'high_value',
-          title: transaction.description || 'Transação',
-          amount: Math.abs(parseFloat(transaction.amount || 0)),
-          // Usar 'date' quando disponível, fallback para 'createdAt'
-          date: new Date(transaction.date || transaction.createdAt?.toDate?.() || transaction.createdAt),
-          description: `Transação de alto valor - ${Math.abs(parseFloat(transaction.amount || 0)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`
-        });
-      }
-    });
-
-    return pending.sort((a, b) => (a.dueDate || a.date) - (b.dueDate || b.date));
+    return items;
   };
 
-  const loadQuickStats = () => {
+  const loadQuickStats = useCallback(() => {
     const balance = calculateBalance();
     const todaySpent = calculateTodaySpent();
     const pendingItems = getPendingItems();
@@ -108,7 +80,21 @@ const HomePage = ({ onNavigate }) => {
       shoppingLists: 0, // TODO: Implementar quando tiver hook de listas
       pendingItems: pendingItems
     });
-  };
+  }, [transactions, fixedExpenses]);
+
+  useEffect(() => {
+    // Saudação baseada no horário
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting('Bom dia');
+    else if (hour < 18) setGreeting('Boa tarde');
+    else setGreeting('Boa noite');
+
+    // Carregar estatísticas rápidas
+    loadQuickStats();
+  }, [loadQuickStats]);
+
+
+
 
 
   const getUserDisplayName = () => {
@@ -224,6 +210,7 @@ const HomePage = ({ onNavigate }) => {
           <FaCalendarDay />
           <span>{new Date().getDate()}</span>
         </DateBadge>
+
       </WelcomeSection>
 
       {/* Cartões de status rápido */}
@@ -243,7 +230,6 @@ const HomePage = ({ onNavigate }) => {
             </StatCard>
           </motion.div>
 
-
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -257,6 +243,7 @@ const HomePage = ({ onNavigate }) => {
               </StatInfo>
             </StatCard>
           </motion.div>
+
 
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
