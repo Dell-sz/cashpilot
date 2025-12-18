@@ -25,13 +25,22 @@ export const useTransactions = () => {
     }
   }, [user]);
 
+
   const addTransaction = async (transactionData) => {
     if (!user) return;
     try {
-      await addDoc(collection(db, 'users', user.uid, 'transactions'), {
+      const transactionToSave = {
         ...transactionData,
-        createdAt: new Date()
-      });
+        // Não sobrescrever a data fornecida pelo usuário
+        createdAt: new Date() // Timestamp de quando foi criado no sistema
+      };
+
+      // Se a data foi fornecida pelo usuário, manter ela no campo 'date'
+      if (!transactionData.date) {
+        transactionToSave.date = new Date().toISOString().split('T')[0];
+      }
+
+      await addDoc(collection(db, 'users', user.uid, 'transactions'), transactionToSave);
       await fetchTransactions(); // Recarrega lista
     } catch (error) {
       console.error('Erro ao adicionar transação:', error);
