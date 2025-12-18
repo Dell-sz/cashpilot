@@ -1,13 +1,17 @@
+
 import React, { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { collection, getDocs, addDoc, query, orderBy } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { useAuth } from "../contexts/AuthContext";
+import { reportsService } from "../services/reportsService";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
 export default function Reports() {
   const { user } = useAuth();
+
+
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -87,6 +91,18 @@ export default function Reports() {
     } catch (error) {
       console.error("Erro ao gerar relatório:", error);
       alert("Erro ao gerar relatório mensal.");
+    }
+  };
+
+
+  const handleDeleteReport = async (reportId) => {
+    try {
+      await reportsService.deleteReport(user.uid, reportId);
+      alert("Relatório deletado com sucesso!");
+      loadReports(); // Recarregar lista
+    } catch (error) {
+      console.error("Erro ao deletar relatório:", error);
+      alert("Erro ao deletar relatório.");
     }
   };
 
@@ -256,12 +272,28 @@ export default function Reports() {
                   <span className={report.saldo >= 0 ? 'text-emerald-400' : 'text-orange-400'}>R$ {report.saldo.toFixed(2)}</span>
                 </div>
               </div>
-              <button
-                onClick={() => downloadReport(report)}
-                className="w-full bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200"
-              >
-                📄 Baixar PDF
-              </button>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => downloadReport(report)}
+                  className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-sm"
+                >
+                  📄 Baixar PDF
+                </button>
+                <button
+                  onClick={() => {
+                    const confirmDelete = window.confirm(
+                      `Tem certeza que deseja deletar o relatório de ${new Date(report.year, report.month).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}?`
+                    );
+                    if (confirmDelete) {
+                      handleDeleteReport(report.id);
+                    }
+                  }}
+                  className="flex-1 bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-lg font-semibold transition-all duration-200 text-sm"
+                >
+                  🗑️ Deletar
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>

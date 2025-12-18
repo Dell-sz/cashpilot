@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import GlobalStyle from "./styles/globalStyles";
@@ -9,10 +10,12 @@ import RegisterPage from "./pages/RegisterPage";
 import PasswordReset from "./pages/PasswordReset";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
+
 import Transactions from "./pages/Transactions";
 import FixedExpenses from "./pages/FixedExpenses";
 import Categories from "./pages/Categories";
 import Reports from "./pages/Reports";
+import ShoppingList from "./pages/ShoppingList";
 
 function AppContent() {
   const { loading, logout } = useAuth();
@@ -26,20 +29,24 @@ function AppContent() {
     );
   }
 
+
   const renderPage = () => {
     if (activePage === "dashboard") return <Dashboard />;
     if (activePage === "transactions") return <Transactions />;
     if (activePage === "categories") return <Categories />;
     if (activePage === "fixed") return <FixedExpenses />;
+    if (activePage === "shopping") return <ShoppingList />;
     if (activePage === "reports") return <Reports />;
     if (activePage === "profile") return <Profile />;
   };
+
 
   const navItems = [
     { key: "dashboard", label: "Dashboard", icon: "📊" },
     { key: "transactions", label: "Transações", icon: "💳" },
     { key: "categories", label: "Categorias", icon: "🏷️" },
     { key: "fixed", label: "Gastos Fixos", icon: "💼" },
+    { key: "shopping", label: "Lista de Compras", icon: "🛒" },
     { key: "reports", label: "Relatórios", icon: "📅" },
     { key: "profile", label: "Perfil", icon: "👤" },
   ];
