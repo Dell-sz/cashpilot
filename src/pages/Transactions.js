@@ -1,5 +1,6 @@
 
 
+
 import React, { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { collection, getDocs } from "firebase/firestore";
@@ -7,6 +8,7 @@ import { db } from "../services/firebaseConfig";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../components/ui/ToastContainer";
 import { useTransactions } from "../hooks/useTransactions";
+import { fixTimezoneIssue, formatDateForDisplay, getTodayDate } from "../utils/dateUtils";
 
 
 export default function Transactions() {
@@ -14,7 +16,8 @@ export default function Transactions() {
   const { showSuccess, showError } = useToast();
   const { transactions, addTransaction, deleteTransaction: deleteTransactionFromHook, clearAllTransactions } = useTransactions();
   const [categories, setCategories] = useState([]);
-  const [newTransaction, setNewTransaction] = useState({ type: "Saída", category: "", value: "", customCategory: "", date: "" });
+
+  const [newTransaction, setNewTransaction] = useState({ type: "Saída", category: "", value: "", customCategory: "", date: getTodayDate() });
   const [isAdding, setIsAdding] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
 
@@ -41,6 +44,7 @@ export default function Transactions() {
   }, [fetchCategories]);
 
 
+
   const handleAddTransaction = async () => {
     if (!user) {
       showError("Você precisa estar logado para adicionar transações.");
@@ -52,16 +56,24 @@ export default function Transactions() {
       return;
     }
     setIsAdding(true);
+
     try {
+      // Debug: Mostrar como a data está sendo processada
+      console.log('Data original do input:', newTransaction.date);
+      console.log('Data após new Date():', new Date(newTransaction.date));
+      console.log('Data ISO:', new Date(newTransaction.date).toISOString());
+      console.log('Data local:', new Date(newTransaction.date).toLocaleDateString('pt-BR'));
+      console.log('Data após fixTimezoneIssue:', fixTimezoneIssue(newTransaction.date));
+
       const transactionData = {
         ...newTransaction,
         category: categoryToSave,
         value: parseFloat(newTransaction.value),
-        date: newTransaction.date || new Date().toISOString().split("T")[0]
+        date: fixTimezoneIssue(newTransaction.date)
       };
 
       await addTransaction(transactionData);
-      setNewTransaction({ type: "Saída", category: "", value: "", customCategory: "", date: "" });
+      setNewTransaction({ type: "Saída", category: "", value: "", customCategory: "", date: getTodayDate() });
       showSuccess("Transação adicionada com sucesso!");
     } catch (error) {
       console.error("Erro ao adicionar transação:", error);
@@ -105,10 +117,10 @@ export default function Transactions() {
     }
   };
 
+
   const formatDate = (dateString) => {
     if (!dateString) return "Sem data";
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
+    return formatDateForDisplay(dateString);
   };
 
   const formatCurrency = (value) => {
