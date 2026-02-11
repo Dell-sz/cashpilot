@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/cashpilot/static/css/main.614728d6.css",
+    "main.js": "/cashpilot/static/js/main.9d567ef4.js",
+    "static/js/977.82282750.chunk.js": "/cashpilot/static/js/977.82282750.chunk.js",
+    "static/js/455.0286cd65.chunk.js": "/cashpilot/static/js/455.0286cd65.chunk.js",
+    "index.html": "/cashpilot/index.html",
+    "main.614728d6.css.map": "/cashpilot/static/css/main.614728d6.css.map",
+    "main.9d567ef4.js.map": "/cashpilot/static/js/main.9d567ef4.js.map",
+    "977.82282750.chunk.js.map": "/cashpilot/static/js/977.82282750.chunk.js.map",
+    "455.0286cd65.chunk.js.map": "/cashpilot/static/js/455.0286cd65.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.614728d6.css",
+    "static/js/main.9d567ef4.js"
+  ]
+}

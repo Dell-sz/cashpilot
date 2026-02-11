@@ -1,0 +1,866 @@
+/* CashPilot Mobile-First Responsive Styles */
+/* ======================================== */
+
+/* CSS Custom Properties (Variables) - Mobile First Base */
+:root {
+  /* ========== BREAKPOINTS ========== */
+  --bp-mobile: 320px;
+  --bp-phablet: 480px;
+  --bp-tablet: 768px;
+  --bp-laptop: 1024px;
+  --bp-desktop: 1280px;
+  --bp-wide: 1440px;
+
+  /* ========== SPACING (8px grid system) ========== */
+  --space-xs: 0.25rem;
+  /* 4px */
+  --space-sm: 0.5rem;
+  /* 8px */
+  --space-md: 1rem;
+  /* 16px */
+  --space-lg: 1.5rem;
+  /* 24px */
+  --space-xl: 2rem;
+  /* 32px */
+  --space-2xl: 3rem;
+  /* 48px */
+  --space-3xl: 4rem;
+  /* 64px */
+
+  /* ========== FONT SIZINGS (Fluid Typography) ========== */
+  --fs-xs: 0.75rem;
+  /* 12px */
+  --fs-sm: 0.875rem;
+  /* 14px */
+  --fs-base: 1rem;
+  /* 16px */
+  --fs-lg: 1.125rem;
+  /* 18px */
+  --fs-xl: 1.25rem;
+  /* 20px */
+  --fs-2xl: 1.5rem;
+  /* 24px */
+  --fs-3xl: 1.875rem;
+  /* 30px */
+  --fs-4xl: 2.25rem;
+  /* 36px */
+  --fs-5xl: 3rem;
+  /* 48px */
+
+  /* ========== LINE HEIGHTS ========== */
+  --lh-tight: 1.1;
+  --lh-snug: 1.25;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.75;
+
+  /* ========== FONT WEIGHTS ========== */
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ========== BORDER RADIUS ========== */
+  --radius-sm: 0.25rem;
+  /* 4px */
+  --radius-md: 0.5rem;
+  /* 8px */
+  --radius-lg: 0.75rem;
+  /* 12px */
+  --radius-xl: 1rem;
+  /* 16px */
+  --radius-full: 9999px;
+
+  /* ========== SHADOWS ========== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px rgba(56, 189, 248, 0.3);
+
+  /* ========== TRANSITIONS ========== */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* ========== Z-INDEX ========== */
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+  --z-mobile-menu: 400;
+  --z-overlay: 500;
+}
+
+/* ======================================== */
+/* BASE RESET - Mobile First                */
+/* ======================================== */
+
+/* Better box sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal scroll */
+html {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: radial-gradient(circle at top left, #0f172a, #0a0f1e);
+  color: #f8fafc;
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Remove default margins */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol {
+  margin: 0;
+}
+
+/* Responsive images */
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Form elements inherit fonts */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Better touch targets on mobile */
+button,
+a,
+input,
+select,
+textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Remove text decoration from links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ======================================== */
+/* UTILITY CLASSES                         */
+/* ======================================== */
+
+/* Container */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+/* Mobile container */
+@media (max-width: 767px) {
+  .container {
+    padding: 0 var(--space-sm);
+  }
+}
+
+/* Hide scrollbar but allow scrolling */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch-friendly button (minimum 44px) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  min-height: 44px;
+  min-width: 44px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* ======================================== */
+/* GRID SYSTEM                            */
+/* ======================================== */
+
+/* Base grid (mobile - single column) */
+.grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+/* Mobile: 1 column (default)
+   Tablet: 2 columns
+   Laptop: 3 columns
+   Desktop: 4 columns */
+.grid-auto {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .grid-auto {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .grid-auto {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-auto {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 2-column grid */
+.grid-2 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 3-column grid */
+.grid-3 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Flexible grid with minmax */
+.grid-flex {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* ======================================== */
+/* FLEXBOX UTILITIES                       */
+/* ======================================== */
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.gap-xs {
+  gap: var(--space-xs);
+}
+
+.gap-sm {
+  gap: var(--space-sm);
+}
+
+.gap-md {
+  gap: var(--space-md);
+}
+
+.gap-lg {
+  gap: var(--space-lg);
+}
+
+.gap-xl {
+  gap: var(--space-xl);
+}
+
+/* ======================================== */
+/* SPACING UTILITIES                       */
+/* ======================================== */
+
+/* Margins */
+.m-0 {
+  margin: 0;
+}
+
+.m-auto {
+  margin: auto;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mt-xs {
+  margin-top: var(--space-xs);
+}
+
+.mt-sm {
+  margin-top: var(--space-sm);
+}
+
+.mt-md {
+  margin-top: var(--space-md);
+}
+
+.mt-lg {
+  margin-top: var(--space-lg);
+}
+
+.mt-xl {
+  margin-top: var(--space-xl);
+}
+
+.mb-xs {
+  margin-bottom: var(--space-xs);
+}
+
+.mb-sm {
+  margin-bottom: var(--space-sm);
+}
+
+.mb-md {
+  margin-bottom: var(--space-md);
+}
+
+.mb-lg {
+  margin-bottom: var(--space-lg);
+}
+
+.mb-xl {
+  margin-bottom: var(--space-xl);
+}
+
+/* Paddings */
+.p-0 {
+  padding: 0;
+}
+
+.p-xs {
+  padding: var(--space-xs);
+}
+
+.p-sm {
+  padding: var(--space-sm);
+}
+
+.p-md {
+  padding: var(--space-md);
+}
+
+.p-lg {
+  padding: var(--space-lg);
+}
+
+.p-xl {
+  padding: var(--space-xl);
+}
+
+.px-sm {
+  padding-left: var(--space-sm);
+  padding-right: var(--space-sm);
+}
+
+.px-md {
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.px-lg {
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+
+.py-sm {
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
+}
+
+.py-md {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.py-lg {
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-lg);
+}
+
+/* ======================================== */
+/* TYPOGRAPHY                             */
+/* ======================================== */
+
+/* Fluid typography - scales with viewport */
+.text-xs {
+  font-size: var(--fs-xs);
+  line-height: var(--lh-normal);
+}
+
+.text-sm {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+}
+
+.text-base {
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+}
+
+.text-lg {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+}
+
+.text-xl {
+  font-size: var(--fs-xl);
+  line-height: var(--lh-snug);
+}
+
+.text-2xl {
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-tight);
+}
+
+.text-3xl {
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
+}
+
+.text-4xl {
+  font-size: var(--fs-4xl);
+  line-height: var(--lh-tight);
+}
+
+.text-5xl {
+  font-size: var(--fs-5xl);
+  line-height: var(--lh-tight);
+}
+
+.font-normal {
+  font-weight: var(--fw-normal);
+}
+
+.font-medium {
+  font-weight: var(--fw-medium);
+}
+
+.font-semibold {
+  font-weight: var(--fw-semibold);
+}
+
+.font-bold {
+  font-weight: var(--fw-bold);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* ======================================== */
+/* FORM ELEMENTS (Mobile Optimized)        */
+/* ======================================== */
+
+/* Input base styles */
+.input {
+  width: 100%;
+  min-height: 48px;
+  /* ≥44px for touch */
+  padding: var(--space-sm) var(--space-md);
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: var(--radius-md);
+  color: #f8fafc;
+  font-size: var(--fs-base);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+.input::placeholder {
+  color: #64748b;
+}
+
+/* Touch-friendly select */
+.select {
+  @extend .input;
+  padding-right: var(--space-xl);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-sm) center;
+  background-size: 20px;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Label */
+.label {
+  display: block;
+  font-size: var(--fs-sm);
+  color: #cbd5e1;
+  margin-bottom: var(--space-xs);
+  font-weight: var(--fw-medium);
+}
+
+/* Form group */
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
+/* ======================================== */
+/* CARDS                                   */
+/* ======================================== */
+
+.card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(8px);
+}
+
+/* Mobile card - more padding on larger screens */
+@media (min-width: 768px) {
+  .card {
+    padding: var(--space-lg);
+  }
+}
+
+/* ======================================== */
+/* BUTTON VARIANTS                         */
+/* ======================================== */
+
+.btn-primary {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #0f172a;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-secondary {
+  background: rgba(51, 65, 85, 0.5);
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
+
+.btn-secondary:hover {
+  background: rgba(51, 65, 85, 0.8);
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.btn-success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover {
+  background: rgba(16, 185, 129, 0.3);
+}
+
+/* Full width on mobile */
+.btn-block {
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  .btn-block {
+    width: auto;
+  }
+}
+
+/* ======================================== */
+/* VISIBILITY UTILITIES                    */
+/* ======================================== */
+
+/* Hide on mobile */
+@media (max-width: 767px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Hide on tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hide-tablet {
+    display: none !important;
+  }
+}
+
+/* Hide on desktop */
+@media (min-width: 1024px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* Show only on mobile */
+.show-mobile-only {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  .show-mobile-only {
+    display: none;
+  }
+}
+
+/* ======================================== */
+/* ANIMATIONS                              */
+/* ======================================== */
+
+/* Slide in from bottom (mobile modal) */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* ======================================== */
+/* SCROLLBAR CUSTOMIZATION                 */
+/* ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0ea5e9;
+}
+
+/* ======================================== */
+/* SELECTION                               */
+/* ======================================== */
+
+::selection {
+  background: rgba(56, 189, 248, 0.3);
+  color: #f8fafc;
+}
+
+/* ======================================== */
+/* FOCUS VISIBLE                           */
+/* ======================================== */
+
+:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+/* Remove default focus for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ======================================== */
+/* NOTCH/DYNAMIC ISLAND SUPPORT (iPhone)   */
+/* ======================================== */
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-all {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+}
+
+/* ======================================== */
+/* REDUCED MOTION SUPPORT                   */
+/* ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ======================================== */
+/* HIGH CONTRAST MODE                      */
+/* ======================================== */
+
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #ffffff;
+  }
+
+  .card {
+    border-width: 2px;
+    border-color: #ffffff;
+  }
+
+  .btn-primary {
+    border: 2px solid currentColor;
+  }
+}
